@@ -1,7 +1,7 @@
 pipeline {
   agent any
   tools {
-    maven 'maven'  // Use the exact name you gave in Jenkins Global Tool Configuration
+    maven 'maven'
   }
   environment {
     IMAGE = 'amalsunny27/jenkins-project'
@@ -34,7 +34,7 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
     stage('Build Docker Image') {
       steps {
         script {
-          docker.build(IMAGE)
+          docker.build("${IMAGE}:latest")
         }
       }
     }
