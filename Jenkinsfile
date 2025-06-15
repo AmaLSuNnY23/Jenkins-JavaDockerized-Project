@@ -2,7 +2,7 @@ pipeline {
   agent any
   environment {
     IMAGE = 'amalsunny27/jenkins-project'
-    DOCKER_CREDS = credentials('Docker-cred') // Make sure this ID exists in Jenkins
+    DOCKER_CREDS = credentials('Docker-cred') 
   }
   stages {
     stage('Checkout') {
@@ -12,7 +12,12 @@ pipeline {
     }
     stage('Build JAR') {
       steps {
-        bat 'mvn clean package -DskipTests'
+        script {
+          // Run Maven build inside the Maven Docker container
+          docker.image('maven:3.9.3-openjdk-17').inside {
+            bat 'mvn clean package -DskipTests'
+          }
+        }
       }
     }
     stage('Generate Dockerfile') {
@@ -38,10 +43,9 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
     stage('Push to DockerHub') {
       steps {
         script {
-          withCredentials([usernamePassword(credentialsId: 'docker-id', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+          withCredentials([usernamePassword(credentialsId: 'Docker-cred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
             bat 'echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin'
             bat "docker push %IMAGE%:latest"
-            bat "docker tag %IMAGE%:latest %IMAGE%:latest"
           }
         }
       }
