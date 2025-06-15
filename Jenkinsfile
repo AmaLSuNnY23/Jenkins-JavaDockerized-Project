@@ -1,8 +1,11 @@
 pipeline {
   agent any
+  tools {
+    maven 'maven'  // Use the exact name you gave in Jenkins Global Tool Configuration
+  }
   environment {
     IMAGE = 'amalsunny27/jenkins-project'
-    DOCKER_CREDS = credentials('Docker-cred') 
+    DOCKER_CREDS = credentials('Docker-cred')
   }
   stages {
     stage('Checkout') {
@@ -12,12 +15,7 @@ pipeline {
     }
     stage('Build JAR') {
       steps {
-        script {
-          // Run Maven build inside the Maven Docker container
-          docker.image('maven:3.9.3-openjdk-17').inside {
-            bat 'mvn clean package -DskipTests'
-          }
-        }
+        bat 'mvn clean package -DskipTests'
       }
     }
     stage('Generate Dockerfile') {
