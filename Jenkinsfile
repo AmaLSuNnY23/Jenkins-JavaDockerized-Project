@@ -1,8 +1,8 @@
 pipeline {
   agent any
   environment {
-    IMAGE = 'bhuvanraj123/containerized-java'
-    DOCKER_CREDS = credentials('docker-id') // Make sure this ID exists in Jenkins
+    IMAGE = 'amalsunny27/jenkins-project'
+    DOCKER_CREDS = credentials('Docker-cred') // Make sure this ID exists in Jenkins
   }
   stages {
     stage('Checkout') {
